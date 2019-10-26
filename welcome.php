@@ -34,6 +34,9 @@ if (isset($_GET['Message'])) {
       <li class="nav-item active">
         <a href="changePassword.php" class="nav-link" href="#">Cambiar contraseña <span class="sr-only">(current)</span></a>
       </li>
+      <li class="nav-item active">
+        <a href="enterprises.php" class="nav-link" href="#">Empresas<span class="sr-only">(current)</span></a>
+      </li>
     </ul>
   </div>
 </nav>

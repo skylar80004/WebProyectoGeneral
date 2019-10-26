@@ -28,11 +28,11 @@ if (isset($_GET['Message'])) {
                             <h3 class="text-center text-info">Iniciar Sesión</h3>
                             <div class="form-group">
                                 <label for="username" class="text-info">Nombre de Usuario:</label><br>
-                                <input type="text" name="username" id="username" class="form-control">
+                                <input type="text" name="username" id="username" value="Zikero" class="form-control">
                             </div>
                             <div class="form-group">
                                 <label for="password" class="text-info">Contraseña:</label><br>
-                                <input type="password" name="password" id="password" class="form-control">
+                                <input type="password" name="password" id="password"  value="123HOLAhola" class="form-control">
                             </div>
                             <div class="form-group">
                                 <label for="remember-me" class="text-info"><span>Remember me</span> <span><input id="remember-me" name="remember-me" type="checkbox"></span></label><br>
