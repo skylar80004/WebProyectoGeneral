@@ -27,6 +27,99 @@ class dbConnection {
 
   }
 
+  public function insertEnterprise(){
+
+    if($this->conn != null){
+
+      $enterpriseName = $_POST["enterpriseName"];
+      $enterpriseOrigin = $_POST["enterpriseOrigin"];
+      $enterpriseDestiny = $_POST["enterpriseDestiny"];
+      $enterprisePhone= $_POST["enterprisePhone"];
+      $enterpriseEmail = $_POST["enterpriseEmail"];
+      $enterpriseAddress= $_POST["enterpriseAddress"];
+      $enterpriseLat = $_POST["enterpriseLat"];
+      $enterpriseLng = $_POST["enterpriseLng"];
+
+      echo $enterpriseName . PHP_EOL;
+      echo $enterpriseOrigin . PHP_EOL;
+      echo $enterprisePhone . PHP_EOL;
+      echo $enterpriseEmail . PHP_EOL;
+      echo $enterpriseAddress . PHP_EOL;
+      echo $enterpriseLat . PHP_EOL;
+      echo $enterpriseLng . PHP_EOL;
+
+      //Input Validations
+      $fieldValidator = new FieldValidator();
+      if($fieldValidator->isEmpty($enterpriseName)){
+
+        $message = "Debe ingresar el nombre de la empresa";
+        $newURL = "createEnterprise.php?Message=".urlencode($message);
+        header('Location: '.$newURL);
+        return;
+      }
+      if($fieldValidator->isEmpty($enterpriseOrigin)){
+
+        $message = "Debe ingresar el sitio origen de la empresa";
+        $newURL = "createEnterprise.php?Message=".urlencode($message);
+        header('Location: '.$newURL);
+        return;
+      }
+      if($fieldValidator->isEmpty($enterprisePhone)){
+
+        $message = "Debe ingresar el número de teléfono de la empresa";
+        $newURL = "createEnterprise.php?Message=".urlencode($message);
+        header('Location: '.$newURL);
+        return;
+      }
+      if($fieldValidator->isEmpty($enterpriseEmail)){
+
+        $message = "Debe ingresar el correo electrónico la empresa";
+        $newURL = "createEnterprise.php?Message=".urlencode($message);
+        header('Location: '.$newURL);
+        return;
+      }
+      if($fieldValidator->isEmpty($enterpriseAddress)){
+
+        $message = "Debe ingresar la dirección física de la empresa";
+        $newURL = "createEnterprise.php?Message=".urlencode($message);
+        header('Location: '.$newURL);
+        return;
+      }
+      if($fieldValidator->isEmpty($enterpriseLat)){
+
+        $message = "Debe ingresar la latitud de la empresa, utilice el mapa";
+        $newURL = "createEnterprise.php?Message=".urlencode($message);
+        header('Location: '.$newURL);
+        return;
+      }
+      if($fieldValidator->isEmpty($enterpriseLng)){
+
+        $message = "Debe ingresar la longitud nombre de la empresa, utilice el mapa";
+        $newURL = "createEnterprise.php?Message=".urlencode($message);
+        header('Location: '.$newURL);
+        return;
+      }
+      // End of input valiations
+      try {
+
+        $insert = "INSERT INTO ENTERPRISE(id,name,origin,destiny,phone,email,address,latitude,longitude) VALUES(?,?,?,?,?,?,?,?,?)";
+        $stmt = $this->conn->prepare($insert);
+        $stmt->execute([null,$enterpriseName,$enterpriseOrigin,
+        $enterpriseDestiny,$enterprisePhone,$enterpriseEmail,$enterpriseAddress,
+        (float) $enterpriseLat,(float) $enterpriseLng]);
+        echo "Insertado";
+
+      } catch (\Exception $e) {
+        echo $e;
+
+      }
+    }
+    else{ // Error, null connection
+
+    }
+
+  }
+
   public function changePassword(){
     if($this->conn != null){
       $fieldValidator = new FieldValidator();

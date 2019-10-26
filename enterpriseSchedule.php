@@ -10,9 +10,13 @@ session_start();
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
     <title>Empresas de Transporte</title>
-
-
   </head>
 
   <body style="background-color:#FFFFFF">
@@ -35,45 +39,39 @@ session_start();
     </nav>
 
     <br />
-    <div class="container justify-content-left align-items-left">
-
-      <div class="row">
-        <form action="createEnterprise.php">
-          <button type="submit" class="btn btn-dark">Agregar Nueva Empresa</button>
-        </form>
-      </div>
+    <div class="container justify-content-center align-items-center">
       <br />
+      <div class="row">
+        <h3>Nombre de la empresa</h3>
+
+      </div>
       <div class="row">
         <div class="col">
           <table class="table table-striped table-dark">
             <thead >
               <tr>
-                  <th>Nombre</th>
-                  <th>Origen Del Servicio</th>
-                  <th>Destino Del Servicio</th>
-                  <th>Télefono</th>
-                  <th>Correo Electrónico</th>
-                  <th>Dirección Física</th>
-                  <th>Dirección En Mapa</th>
-                  <th>Horario</th>
-                  <th>Contacto en caso de anomalía</th>
-                  <th class="text-center">Acción</th>
+                  <th>Dia</th>
+                  <th>Abre</th>
+                  <th>Cierra</th>
               </tr>
             </thead>
               <tr>
                   <td>1</td>
                   <td>News</td>
                   <td>News Cate</td>
-                  <td>1</td>
-                  <td>News</td>
-                  <td>News Cate</td>
-                  <td>1</td>
-                  <td>News</td>
-                  <td>News Cate</td>
-                  <td class="text-center">
-                    <a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span> Editar</a>
-                    <a href="enterpriseSchedule.php" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Horario</a>
-                  </td>
+                  <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span> Edit</a> <a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Del</a></td>
+              </tr>
+              <tr>
+                  <td>2</td>
+                  <td>Products</td>
+                  <td>Main Products</td>
+                  <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span> Edit</a> <a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Del</a></td>
+              </tr>
+              <tr>
+                  <td>3</td>
+                  <td>Blogs</td>
+                  <td>Parent Blogs</td>
+                  <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span> Edit</a> <a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Del</a></td>
               </tr>
       </table>
         </div>

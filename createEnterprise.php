@@ -1,5 +1,8 @@
 <?php
 session_start();
+if (isset($_GET['Message'])) {
+    print '<script type="text/javascript">alert("' . $_GET['Message'] . '");</script>';
+}
  ?>
 <!doctype html>
 <html lang="en">
@@ -10,6 +13,11 @@ session_start();
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
 
     <title>Hello, world!</title>
   </head>
@@ -33,36 +41,79 @@ session_start();
     </nav>
 
     <div class="container">
+      <br />
       <div class="row">
-        <form>
-          <h2>Ingrese la información de la nueva empresa de transporte</h2>
-          <div class="form-group">
-            <label for="exampleInputEmail1">Nombre de la empresa</label>
-            <input type="text" class="form-control" id="enterpriseName" placeholder="Ejemplo: Lumaca">
-          </div>
-          <div class="form-group">
-            <label for="exampleInputPassword1">Sitio origen del servicio</label>
-            <input type="text" class="form-control" id="enterpriseOrigin" placeholder="Ejemplo: Cartago">
-          </div>
-          <div class="form-group">
-            <label for="exampleInputPassword1">Número de Teléfono</label>
-            <input type="tel" class="form-control" id="enterprisePhone" placeholder="Ejemplo: 2551-1234">
-            <small id="emailHelp" class="form-text text-muted">Formato: 2222-2222</small>
-          </div>
-          <div class="form-group">
-            <label for="exampleInputPassword1">Correo Electrónico</label>
-            <input type="email" class="form-control" id="enterpriseOrigin" placeholder="Ejemplo: nombre@correo.com">
-          </div>
-          <div class="form-group">
-            <label for="exampleInputPassword1">Dirección física</label>
-            <input type="text" class="form-control" id="enterpriseOrigin" placeholder="Ejemplo: Cartago, 100 metros norte de Iglesia del Carmen">
-          </div>
-          <div class="form-group">
-            <label for="exampleInputPassword1">Dirección física</label>
-            <input type="text" class="form-control" id="enterpriseOrigin" placeholder="Ejemplo: Cartago, 100 metros norte de Iglesia del Carmen">
-          </div>
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
+        <div class="col">
+          <form id="login-form" class="form" action="createEnterpriseDB.php" method="post">
+            <h2>Ingrese la información de la nueva empresa de transporte</h2>
+            <div class="form-group">
+              <label for="exampleInputEmail1">Nombre de la empresa</label>
+              <input type="text" class="form-control" name="enterpriseName" id="enterpriseName" placeholder="Ejemplo: Lumaca">
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword1">Sitio origen del servicio</label>
+              <input type="text" class="form-control" name="enterpriseOrigin" id="enterpriseOrigin" placeholder="Ejemplo: Cartago">
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword1">Sitio destino del servicio</label>
+              <input type="text" class="form-control" name="enterpriseDestiny" id="enterpriseDestiny" placeholder="Ejemplo: San Jose">
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword1">Número de Teléfono</label>
+              <input type="tel" class="form-control" name="enterprisePhone" id="enterprisePhone" placeholder="Ejemplo: 2551-1234">
+              <small id="emailHelp" class="form-text text-muted">Formato: 2222-2222</small>
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword1">Correo Electrónico</label>
+              <input type="email" class="form-control" name="enterpriseEmail" id="enterpriseEmail" placeholder="Ejemplo: nombre@correo.com">
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword1">Dirección física</label>
+              <input type="text" class="form-control" name="enterpriseAddress" id="enterpriseAddress" placeholder="Ejemplo: Cartago, 100 metros norte de Iglesia del Carmen">
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword1">Latitud</label>
+              <input type="text" class="form-control" name="enterpriseLat" id="enterpriseLat" placeholder="Ejemplo: , 10.5">
+              <small id="emailHelp" class="form-text text-muted">Puede establecer la ubicación haciendo click en el mapa</small>
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword1">Longitud</label>
+              <input type="text" class="form-control" name="enterpriseLng" id="enterpriseLng" placeholder="Ejemplo: 100.4534">
+              <small id="emailHelp" class="form-text text-muted">Puede establecer la ubicación haciendo click en el mapa</small>
+            </div>
+            <button type="submit" class="btn btn-primary">Agregar Empresa</button>
+          </form>
+        </div>
+        <div class="col">
+
+          <div id="map" class="map map-home" style="margin:12px 0 12px 0;height:600px;"></div>
+          <script>
+
+          	let osmUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+          		osmAttrib = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          		osm = L.tileLayer(osmUrl, {maxZoom:40 , attribution: osmAttrib});
+
+            let OpenStreetMap_HOT = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+          	maxZoom: 19,
+          	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>'
+          });
+
+          	let map = L.map('map').setView([9.973255, -84.083802], 17).addLayer(OpenStreetMap_HOT);
+            let marker;
+            map.on('click', function(e){ // When map is clicked, a new marker appears and the inputs for lat and lng are updated
+
+              marker = new L.Marker(e.latlng,{draggable:true});
+              map.addLayer(marker);
+              let domInputLat = document.getElementById('enterpriseLat');
+              let domInputLon = document.getElementById('enterpriseLng');
+              domInputLat.value = e.latlng.lat;
+              domInputLon.value = e.latlng.lng;
+
+            });
+        </script>
+        </div>
+      </div>
+
       </div>
     </div>
 
