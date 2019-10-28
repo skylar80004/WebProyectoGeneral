@@ -33,7 +33,6 @@ session_start();
         </ul>
       </div>
     </nav>
-
     <br />
     <div class="container justify-content-left align-items-left">
 
@@ -54,12 +53,11 @@ session_start();
                   <th>Télefono</th>
                   <th>Correo Electrónico</th>
                   <th>Dirección Física</th>
-                  <th>Dirección En Mapa</th>
-                  <th>Horario</th>
                   <th>Contacto en caso de anomalía</th>
                   <th class="text-center">Acción</th>
               </tr>
             </thead>
+            <tbody>
               <tr>
                   <td>1</td>
                   <td>News</td>
@@ -68,13 +66,48 @@ session_start();
                   <td>News</td>
                   <td>News Cate</td>
                   <td>1</td>
-                  <td>News</td>
-                  <td>News Cate</td>
                   <td class="text-center">
                     <a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span> Editar</a>
                     <a href="enterpriseSchedule.php" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Horario</a>
                   </td>
               </tr>
+              <?php
+
+              include 'dbConnection.php';
+
+              $dbConnection = new dbConnection();
+              $dbConnection->connect();
+              $data = $dbConnection->getEnterprises();
+              foreach($data as $row){
+                $scheduleRef = 'enterpriseSchedule.php?id='.$row['id'].'&name='.$row['name'];
+                $mapRef = 'enterpriseMap.php?lat='.$row['latitude'].'&lng='.$row['longitude'].'&name='.$row['name'];
+                $editRef = 'editEnterprise.php?id='.$row['id'];
+                $buttonEdit = "<a href=".$editRef." class='btn btn-block btn-info btn-xs' href='#'>Editar</a>";
+                $buttonSchedule = "<a href=".$scheduleRef." class='btn btn-block btn-info btn-xs'>Horario</a>";
+                $buttonMap = "<a href=".$mapRef." class='btn btn-block btn-info btn-xs'>Mapa</a>";
+
+                echo '<tr>
+                        <td>'.$row['name'].'</td>'.
+                        '<td>'.$row['origin'].'</td>'.
+                        '<td>'.$row['destiny'].'</td>'.
+                        '<td>'.$row['phone'].'</td>'.
+                        '<td>'.$row['email'].'</td>'.
+                        '<td>'.$row['address'].'</td>'.
+                        '<td>'.$row['anomalyContact'].'</td>'.
+                        '<td>'.
+                          $buttonEdit.
+                          $buttonSchedule.
+                          $buttonMap.
+                        '</td>'.
+                      '</tr>'
+                ;
+
+              }
+
+
+              ?>
+            </tbody>
+
       </table>
         </div>
 </div>

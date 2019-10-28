@@ -1,5 +1,6 @@
 <?php
 
+error_reporting(E_ALL ^ E_NOTICE);
 include 'FieldValidator.php';
 session_start();
 
@@ -27,10 +28,96 @@ class dbConnection {
 
   }
 
-  public function insertEnterprise(){
+  public function getSchedule($enterpriseId){
 
     if($this->conn != null){
 
+      try {
+
+        $sql = "select * from schedule where enterpriseID=:enterpriseID";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute(['enterpriseID' =>(int)$enterpriseId]);
+        $data = $stmt->fetchAll();
+        return $data;
+
+      } catch (\Exception $e) {
+        echo $e;
+
+      }
+  }
+}
+  public function insertSchedule(){
+
+    if($this->conn != null){
+
+      $fieldValidator = new FieldValidator();
+      $enterpriseId = $_SESSION['enterpriseId'];
+      echo "ID ES: ".$enterpriseId;
+      $mondayStart = $_POST['mondayStart'];
+      $mondayFinish = $_POST['mondayFinish'];
+      $tuesdayStart = $_POST['tuesdayStart'];
+      $tuesdayFinish = $_POST['tuesdayFinish'];
+      $wednesdayStart = $_POST['wednesdayStart'];
+      $wednesdayFinish = $_POST['wednesdayFinish'];
+      $thursdayStart = $_POST['thursdayStart'];
+      $thursdayFinish = $_POST['thursdayFinish'];
+      $fridayStart = $_POST['fridayStart'];
+      $fridayFinish = $_POST['fridayFinish'];
+      $saturdayStart = $_POST['saturdayStart'];
+      $saturdayFinish = $_POST['saturdayFinish'];
+      $sundayStart = $_POST['sundayStart'];
+      $sundayFinish = $_POST['sundayFinish'];
+
+      if($fieldValidator->isEmpty($enterpriseId)){
+        echo "Id nulo";
+      }
+      // TODO: validate isEmpty
+
+      try {
+
+        $sql = "insert into schedule(id,enterpriseID,day,start,finish) values(?,?,?,?,?)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([null,(int)$enterpriseId,"Lunes",$mondayStart,$mondayFinish]);
+
+        $sql = "insert into schedule(id,enterpriseID,day,start,finish) values(?,?,?,?,?)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([null,(int)$enterpriseId,"Martes",$tuesdayStart,$tuesdayFinish]);
+
+        $sql = "insert into schedule(id,enterpriseID,day,start,finish) values(?,?,?,?,?)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([null,(int)$enterpriseId,"Miercoles",$wednesdayStart,$wednesdayFinish]);
+
+        $sql = "insert into schedule(id,enterpriseID,day,start,finish) values(?,?,?,?,?)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([null,(int)$enterpriseId,"Jueves",$thursdayStart,$thursdayFinish]);
+
+        $sql = "insert into schedule(id,enterpriseID,day,start,finish) values(?,?,?,?,?)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([null,(int)$enterpriseId,"Viernes",$fridayStart,$fridayFinish]);
+
+        $sql = "insert into schedule(id,enterpriseID,day,start,finish) values(?,?,?,?,?)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([null,(int)$enterpriseId,"Sabado",$saturdayStart,$saturdayFinish]);
+
+        $sql = "insert into schedule(id,enterpriseID,day,start,finish) values(?,?,?,?,?)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([null,(int)$enterpriseId,"Sunday",$sundayStart,$sundayFinish]);
+
+        echo "insertado";
+
+      } catch (\Exception $e) {
+        echo "error ".$e;
+
+      }
+
+
+    }
+  }
+
+  public function editEnterprise(){
+    if($this->conn != null){
+
+      $fieldValidator = new FieldValidator();
       $enterpriseName = $_POST["enterpriseName"];
       $enterpriseOrigin = $_POST["enterpriseOrigin"];
       $enterpriseDestiny = $_POST["enterpriseDestiny"];
@@ -39,14 +126,9 @@ class dbConnection {
       $enterpriseAddress= $_POST["enterpriseAddress"];
       $enterpriseLat = $_POST["enterpriseLat"];
       $enterpriseLng = $_POST["enterpriseLng"];
+      $enterpriseAnomalyContact = $_POST["anomalyContact"];
+      $enterpriseId = $_SESSION["enterpriseId"];
 
-      echo $enterpriseName . PHP_EOL;
-      echo $enterpriseOrigin . PHP_EOL;
-      echo $enterprisePhone . PHP_EOL;
-      echo $enterpriseEmail . PHP_EOL;
-      echo $enterpriseAddress . PHP_EOL;
-      echo $enterpriseLat . PHP_EOL;
-      echo $enterpriseLng . PHP_EOL;
 
       //Input Validations
       $fieldValidator = new FieldValidator();
@@ -99,14 +181,154 @@ class dbConnection {
         header('Location: '.$newURL);
         return;
       }
+      if($fieldValidator->isEmpty($enterpriseAnomalyContact)){
+
+        $message = "Debe ingresar el contacto para reportar anomalías";
+        $newURL = "createEnterprise.php?Message=".urlencode($message);
+        header('Location: '.$newURL);
+        return;
+      }
+      if($fieldValidator->isEmpty($enterpriseId)){
+
+        $message = "ID nulo";
+        $newURL = "createEnterprise.php?Message=".urlencode($message);
+        header('Location: '.$newURL);
+        return;
+      }
+      // End of input valiations
+
+      try {
+        echo "hola";
+        echo $enterpriseId;
+        $sql = "UPDATE enterprise SET name=?, origin=?, destiny=?,
+        phone=?, email=?, address= ?, latitude=?, longitude=?,
+        anomalyContact=? WHERE id=?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute([$enterpriseName,$enterpriseOrigin,$enterpriseDestiny,
+        $enterprisePhone,$enterpriseEmail,$enterpriseAddress,$enterpriseLat,
+        $enterpriseLng,$enterpriseAnomalyContact,$enterpriseId]);
+        echo "Updated";
+
+      } catch (\Exception $e) {
+        echo $e;
+
+      }
+
+    }
+  }
+  public function getEnterprise($id){
+    if($this->conn != null){
+
+      try {
+        $sql = "select * from enterprise where id=:id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute(['id' =>(int)$id]);
+        $enterprise = $stmt->fetch();
+        return $enterprise;
+
+
+      } catch (\Exception $e) {
+        echo $e;
+
+      }
+    }
+  }
+  public function getEnterprises(){
+
+    if($this->conn != null){
+      try {
+        $data = $this->conn->query("SELECT * FROM enterprise")->fetchAll();
+        return $data;
+      } catch (\Exception $e) {
+        echo $e;
+
+      }
+
+
+    }
+
+  }
+  public function insertEnterprise(){
+
+    if($this->conn != null){
+
+      $enterpriseName = $_POST["enterpriseName"];
+      $enterpriseOrigin = $_POST["enterpriseOrigin"];
+      $enterpriseDestiny = $_POST["enterpriseDestiny"];
+      $enterprisePhone= $_POST["enterprisePhone"];
+      $enterpriseEmail = $_POST["enterpriseEmail"];
+      $enterpriseAddress= $_POST["enterpriseAddress"];
+      $enterpriseLat = $_POST["enterpriseLat"];
+      $enterpriseLng = $_POST["enterpriseLng"];
+      $enterpriseAnomalyContact = $_POST["anomalyContact"];
+
+
+      //Input Validations
+      $fieldValidator = new FieldValidator();
+      if($fieldValidator->isEmpty($enterpriseName)){
+
+        $message = "Debe ingresar el nombre de la empresa";
+        $newURL = "createEnterprise.php?Message=".urlencode($message);
+        header('Location: '.$newURL);
+        return;
+      }
+      if($fieldValidator->isEmpty($enterpriseOrigin)){
+
+        $message = "Debe ingresar el sitio origen de la empresa";
+        $newURL = "createEnterprise.php?Message=".urlencode($message);
+        header('Location: '.$newURL);
+        return;
+      }
+      if($fieldValidator->isEmpty($enterprisePhone)){
+
+        $message = "Debe ingresar el número de teléfono de la empresa";
+        $newURL = "createEnterprise.php?Message=".urlencode($message);
+        header('Location: '.$newURL);
+        return;
+      }
+      if($fieldValidator->isEmpty($enterpriseEmail)){
+
+        $message = "Debe ingresar el correo electrónico la empresa";
+        $newURL = "createEnterprise.php?Message=".urlencode($message);
+        header('Location: '.$newURL);
+        return;
+      }
+      if($fieldValidator->isEmpty($enterpriseAddress)){
+
+        $message = "Debe ingresar la dirección física de la empresa";
+        $newURL = "createEnterprise.php?Message=".urlencode($message);
+        header('Location: '.$newURL);
+        return;
+      }
+      if($fieldValidator->isEmpty($enterpriseLat)){
+
+        $message = "Debe ingresar la latitud de la empresa, utilice el mapa";
+        $newURL = "createEnterprise.php?Message=".urlencode($message);
+        header('Location: '.$newURL);
+        return;
+      }
+      if($fieldValidator->isEmpty($enterpriseLng)){
+
+        $message = "Debe ingresar la longitud nombre de la empresa, utilice el mapa";
+        $newURL = "createEnterprise.php?Message=".urlencode($message);
+        header('Location: '.$newURL);
+        return;
+      }
+      if($fieldValidator->isEmpty($enterpriseAnomalyContact)){
+
+        $message = "Debe ingresar el contacto para reportar anomalías";
+        $newURL = "createEnterprise.php?Message=".urlencode($message);
+        header('Location: '.$newURL);
+        return;
+      }
       // End of input valiations
       try {
 
-        $insert = "INSERT INTO ENTERPRISE(id,name,origin,destiny,phone,email,address,latitude,longitude) VALUES(?,?,?,?,?,?,?,?,?)";
+        $insert = "INSERT INTO ENTERPRISE(id,name,origin,destiny,phone,email,address,latitude,longitude,anomalyContact) VALUES(?,?,?,?,?,?,?,?,?,?)";
         $stmt = $this->conn->prepare($insert);
         $stmt->execute([null,$enterpriseName,$enterpriseOrigin,
         $enterpriseDestiny,$enterprisePhone,$enterpriseEmail,$enterpriseAddress,
-        (float) $enterpriseLat,(float) $enterpriseLng]);
+        (float) $enterpriseLat,(float) $enterpriseLng,$enterpriseAnomalyContact]);
         echo "Insertado";
 
       } catch (\Exception $e) {

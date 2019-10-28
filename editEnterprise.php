@@ -1,8 +1,14 @@
 <?php
-session_start();
-if (isset($_GET['Message'])) {
-    print '<script type="text/javascript">alert("' . $_GET['Message'] . '");</script>';
-}
+  session_start();
+  if (isset($_GET['Message'])) {
+      print '<script type="text/javascript">alert("' . $_GET['Message'] . '");</script>';
+  }
+  include 'dbConnection.php';
+  $dbConnection = new dbConnection();
+  $dbConnection->connect();
+  $enterpriseData = $dbConnection->getEnterprise($_GET['id']);
+  $_SESSION["enterpriseId"] = $_GET['id'];
+
  ?>
 <!doctype html>
 <html lang="en">
@@ -44,48 +50,48 @@ if (isset($_GET['Message'])) {
       <br />
       <div class="row">
         <div class="col">
-          <form id="login-form" class="form" action="createEnterpriseDB.php" method="post">
-            <h2>Ingrese la información de la nueva empresa de transporte</h2>
+          <form id="login-form" class="form" action="editEnterpriseDB.php" method="post">
+            <h2>Ingrese los datos para actualizar la empresa</h2>
             <div class="form-group">
               <label for="exampleInputEmail1">Nombre de la empresa</label>
-              <input type="text" class="form-control" name="enterpriseName" id="enterpriseName" placeholder="Ejemplo: Lumaca">
+              <input value= <?php echo htmlspecialchars($enterpriseData['name']) ?> type="text" class="form-control" name="enterpriseName" id="enterpriseName" placeholder="Ejemplo: Lumaca">
             </div>
             <div class="form-group">
               <label for="exampleInputPassword1">Sitio origen del servicio</label>
-              <input type="text" class="form-control" name="enterpriseOrigin" id="enterpriseOrigin" placeholder="Ejemplo: Cartago">
+              <input value= <?php echo htmlspecialchars($enterpriseData['origin']) ?> type="text" class="form-control" name="enterpriseOrigin" id="enterpriseOrigin" placeholder="Ejemplo: Cartago">
             </div>
             <div class="form-group">
               <label for="exampleInputPassword1">Sitio destino del servicio</label>
-              <input type="text" class="form-control" name="enterpriseDestiny" id="enterpriseDestiny" placeholder="Ejemplo: San Jose">
+              <input value= <?php echo htmlspecialchars($enterpriseData['destiny']) ?> type="text" class="form-control" name="enterpriseDestiny" id="enterpriseDestiny" placeholder="Ejemplo: San Jose">
             </div>
             <div class="form-group">
               <label for="exampleInputPassword1">Número de Teléfono</label>
-              <input type="tel" class="form-control" name="enterprisePhone" id="enterprisePhone" placeholder="Ejemplo: 2551-1234">
+              <input value= <?php echo htmlspecialchars($enterpriseData['phone']) ?> type="tel" class="form-control" name="enterprisePhone" id="enterprisePhone" placeholder="Ejemplo: 2551-1234">
               <small id="emailHelp" class="form-text text-muted">Formato: 2222-2222</small>
             </div>
             <div class="form-group">
               <label for="exampleInputPassword1">Correo Electrónico</label>
-              <input type="email" class="form-control" name="enterpriseEmail" id="enterpriseEmail" placeholder="Ejemplo: nombre@correo.com">
+              <input value= <?php echo htmlspecialchars($enterpriseData['email']) ?> type="email" class="form-control" name="enterpriseEmail" id="enterpriseEmail" placeholder="Ejemplo: nombre@correo.com">
             </div>
             <div class="form-group">
               <label for="exampleInputPassword1">Dirección física</label>
-              <input type="text" class="form-control" name="enterpriseAddress" id="enterpriseAddress" placeholder="Ejemplo: Cartago, 100 metros norte de Iglesia del Carmen">
+              <input value= <?php echo htmlspecialchars($enterpriseData['address']) ?> type="text" class="form-control" name="enterpriseAddress" id="enterpriseAddress" placeholder="Ejemplo: Cartago, 100 metros norte de Iglesia del Carmen">
             </div>
             <div class="form-group">
               <label for="exampleInputPassword1">Latitud</label>
-              <input type="text" class="form-control" name="enterpriseLat" id="enterpriseLat" placeholder="Ejemplo: , 10.5">
+              <input value= <?php echo htmlspecialchars($enterpriseData['latitude']) ?> type="text" class="form-control" name="enterpriseLat" id="enterpriseLat" placeholder="Ejemplo: , 10.5">
               <small id="emailHelp" class="form-text text-muted">Puede establecer la ubicación haciendo click en el mapa</small>
             </div>
             <div class="form-group">
               <label for="exampleInputPassword1">Longitud</label>
-              <input type="text" class="form-control" name="enterpriseLng" id="enterpriseLng" placeholder="Ejemplo: 100.4534">
+              <input value= <?php echo htmlspecialchars($enterpriseData['longitude']) ?> type="text" class="form-control" name="enterpriseLng" id="enterpriseLng" placeholder="Ejemplo: 100.4534">
               <small id="emailHelp" class="form-text text-muted">Puede establecer la ubicación haciendo click en el mapa</small>
             </div>
             <div class="form-group">
               <label for="exampleInputPassword1">Contacto para reportar anomalías</label>
-              <input type="text" class="form-control" name="anomalyContact" id="anomalyContact" placeholder="Ejemplo: Telefono 2553-0973">
+              <input value= <?php echo htmlspecialchars($enterpriseData['anomalyContact']) ?> type="text" class="form-control" name="anomalyContact" id="anomalyContact" placeholder="Ejemplo: Telefono 2553-0973">
             </div>
-            <button type="submit" class="btn btn-primary">Agregar Empresa</button>
+            <button type="submit" class="btn btn-primary">Editar Empresa</button>
           </form>
         </div>
         <div class="col">

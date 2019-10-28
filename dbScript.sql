@@ -21,7 +21,20 @@ create table enterprise(
   email varchar(100),
   address varchar(100),
   latitude float,
-  longitude float
+  longitude float,
+  anomalyContact varchar(200)
 )
+
+ALTER TABLE enterprise AUTO_INCREMENT=1;
+
+create table schedule(
+  id int AUTO_INCREMENT PRIMARY KEY,
+  enterpriseID int,
+  day varchar(100),
+  start varchar (100),
+  finish varchar (100),
+  FOREIGN KEY(enterpriseID) REFERENCES enterprise(id)
+
+);
 
 ALTER TABLE enterprise AUTO_INCREMENT=1;

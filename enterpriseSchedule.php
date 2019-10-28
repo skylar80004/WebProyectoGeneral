@@ -42,8 +42,16 @@ session_start();
     <div class="container justify-content-center align-items-center">
       <br />
       <div class="row">
-        <h3>Nombre de la empresa</h3>
+        <h3><?php echo $_GET['name']?></h3>
+      </div>
+      <div class="row">
 
+        <?php
+        $addRef = 'createSchedule.php?id='.$_GET['id'].'&name='.$_GET['name'];
+        $buttonAddRef = "<a href=".$addRef." class='btn  btn-primary btn-xs' href='#'>Agregar horario</a>";
+        echo $buttonAddRef;
+
+         ?>
       </div>
       <div class="row">
         <div class="col">
@@ -55,24 +63,99 @@ session_start();
                   <th>Cierra</th>
               </tr>
             </thead>
-              <tr>
-                  <td>1</td>
-                  <td>News</td>
-                  <td>News Cate</td>
-                  <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span> Edit</a> <a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Del</a></td>
-              </tr>
-              <tr>
-                  <td>2</td>
-                  <td>Products</td>
-                  <td>Main Products</td>
-                  <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span> Edit</a> <a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Del</a></td>
-              </tr>
-              <tr>
-                  <td>3</td>
-                  <td>Blogs</td>
-                  <td>Parent Blogs</td>
-                  <td class="text-center"><a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span> Edit</a> <a href="#" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Del</a></td>
-              </tr>
+            <tbody>
+              <?php
+
+                include 'dbConnection.php';
+                $dbConnection = new dbConnection();
+                $dbConnection->connect();
+                $data = $dbConnection->getSchedule($_GET['id']);
+
+                $mondayStart = "Hola";
+                $mondayFinish = "Hola";
+                $tuesdayStart = "Hola";
+                $tuesdayFinish  = "Hola";
+                $wednesdayStart = "Hola";
+                $wednesdayFinish = "Hola";
+                $thursdayStart = "Hola";
+                $thursdayFinish = "Hola";
+                $fridayStart = "Hola";
+                $fridayFinish = "Hola";
+                $saturdayStart = "Hola";
+                $saturdayFinish = "Hola";
+                $sundayStart = "Hola";
+                $sundayFinish = "Hola";
+
+                foreach ($data as $row) {
+
+                  if($row['day']== "Lunes" && $row['start']!= null && $row['finish'] != null ){
+                    $mondayStart = $row['start'];
+                    $mondayFinish = $row['finish'];
+                  }
+                  if($row['day']== "Martes" && $row['start']!= null && $row['finish'] != null ){
+                    $tuesdayStart = $row['start'];
+                    $tuesdayFinish = $row['finish'];
+                  }
+                  if($row['day']== "Miercoles" && $row['start']!= null && $row['finish'] != null ){
+                    $wednesdayStart = $row['start'];
+                    $wednesdayFinish = $row['finish'];
+                  }
+                  if($row['day']== "Jueves" && $row['start']!= null && $row['finish'] != null ){
+                    $thursdayStart = $row['start'];
+                    $thursdayFinish = $row['finish'];
+                  }
+                  if($row['day']== "Viernes" && $row['start']!= null && $row['finish'] != null ){
+                    $fridayStart = $row['start'];
+                    $fridayFinish = $row['finish'];
+                  }
+                  if($row['day']== "Sabado" && $row['start']!= null && $row['finish'] != null ){
+                    $saturdayStart = $row['start'];
+                    $saturdayFinish = $row['finish'];
+                  }
+                  if($row['day']== "Sunday" && $row['start']!= null && $row['finish'] != null ){
+                    $sundayStart = $row['start'];
+                    $sundayFinish = $row['finish'];
+                  }
+                }
+
+                echo '<tr>'.
+                        '<td>Lunes</td>'.
+                        '<td>'.$mondayStart.'</td>'.
+                        '<td>'.$mondayFinish.'</td>'.
+                      '</tr>'.
+                      '<tr>'.
+                        '<td>Martes</td>'.
+                        '<td>'.$tuesdayStart.'</td>'.
+                        '<td>'.$tuesdayFinish.'</td>'.
+                      '</tr>'.
+                      '<tr>'.
+                        '<td>Miercoles</td>'.
+                        '<td>'.$wednesdayStart.'</td>'.
+                        '<td>'.$wednesdayStart.'</td>'.
+                      '</tr>'.
+                      '<tr>'.
+                        '<td>Jueves</td>'.
+                        '<td>'.$thursdayStart.'</td>'.
+                        '<td>'.$thursdayFinish.'</td>'.
+                      '</tr>'.
+                      '<tr>'.
+                        '<td>Viernes</td>'.
+                        '<td>'.$fridayStart.'</td>'.
+                        '<td>'.$fridayFinish.'</td>'.
+                      '</tr>'.
+                      '<tr>'.
+                        '<td>Sabado</td>'.
+                        '<td>'.$saturdayStart.'</td>'.
+                        '<td>'.$saturdayFinish.'</td>'.
+                      '</tr>'.
+                      '<tr>'.
+                        '<td>Domingo</td>'.
+                        '<td>'.$sundayStart.'</td>'.
+                        '<td>'.$sundayFinish.'</td>'.
+                      '</tr>'
+                      ;
+               ?>
+            </tbody>
       </table>
         </div>
 </div>
