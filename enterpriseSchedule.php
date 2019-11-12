@@ -47,12 +47,16 @@ session_start();
       <div class="row">
 
         <?php
-        $addRef = 'createSchedule.php?id='.$_GET['id'].'&name='.$_GET['name'];
-        $updateRef = 'updateSchedule.php?id='.$_GET['id'].'&name='.$_GET['name'];
-        $buttonAddRef = "<a href=".$addRef." class='btn  btn-primary btn-xs' href='#'>Crear horario</a>";
-        echo $buttonAddRef;
-        $buttonUpdateRef = "<a href=".$updateRef." class='btn  btn-primary btn-xs' href='#'>Actualizar horario</a>";
-        echo $buttonUpdateRef;
+        if($_SESSION['username'] != null){
+          $addRef = 'createSchedule.php?id='.$_GET['id'].'&name='.$_GET['name'];
+          $updateRef = 'updateSchedule.php?id='.$_GET['id'].'&name='.$_GET['name'];
+          $buttonAddRef = "<a href=".$addRef." class='btn  btn-primary btn-xs' href='#'>Crear horario</a>";
+          echo $buttonAddRef;
+          $buttonUpdateRef = "<a href=".$updateRef." class='btn  btn-primary btn-xs' href='#'>Actualizar horario</a>";
+          echo $buttonUpdateRef;
+
+        }
+
 
          ?>
       </div>

@@ -35,7 +35,7 @@ if (isset($_GET['Message'])) {
                                 <input type="password" name="password" id="password"  value="123HOLAhola" class="form-control">
                             </div>
                             <div class="form-group">
-                                <label for="remember-me" class="text-info"><span>Remember me</span> <span><input id="remember-me" name="remember-me" type="checkbox"></span></label><br>
+                                <a href="guest.php" class="text-info">Ingresar como invitado</a>
                                 <input class="btn btn-info btn-block" type="submit" name="submit" class="btn btn-info btn-md" value="Ingresar">
                             </div>
                             <div id="register-link" class="text-right">

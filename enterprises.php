@@ -33,10 +33,14 @@ session_start();
           <li class="nav-item active">
             <a href="log.php" class="nav-link" href="#">Log<span class="sr-only">(current)</span></a>
           </li>
+          <li class="nav-item active">
+            <a href="querys.php" class="nav-link" href="#">Consultas<span class="sr-only">(current)</span></a>
+          </li>
         </ul>
       </div>
     </nav>
     <br />
+
     <div class="container justify-content-left align-items-left">
 
       <div class="row">
@@ -80,21 +84,40 @@ session_start();
                 $buttonMap = "<a href=".$mapRef." class='btn btn-block btn-info btn-xs'>Mapa</a>";
                 $buttonRoutes = "<a href=".$routeRef." class='btn btn-block btn-info btn-xs'>Rutas</a>";
 
-                echo '<tr>
-                        <td>'.$row['name'].'</td>'.
-                        '<td>'.$row['origin'].'</td>'.
-                        '<td>'.$row['destiny'].'</td>'.
-                        '<td>'.$row['phone'].'</td>'.
-                        '<td>'.$row['email'].'</td>'.
-                        '<td>'.$row['address'].'</td>'.
-                        '<td>'.$row['anomalyContact'].'</td>'.
-                        '<td>'.
-                          $buttonEdit.
-                          $buttonSchedule.
-                          $buttonMap.
-                          $buttonRoutes.
-                        '</td>'.
-                      '</tr>';
+
+                if($_SESSION["username"] != null){
+
+                  echo '<tr>
+                          <td>'.$row['name'].'</td>'.
+                          '<td>'.$row['origin'].'</td>'.
+                          '<td>'.$row['destiny'].'</td>'.
+                          '<td>'.$row['phone'].'</td>'.
+                          '<td>'.$row['email'].'</td>'.
+                          '<td>'.$row['address'].'</td>'.
+                          '<td>'.$row['anomalyContact'].'</td>'.
+                          '<td>'.
+                            $buttonEdit.
+                            $buttonSchedule.
+                            $buttonMap.
+                            $buttonRoutes.
+                          '</td>'.
+                        '</tr>';
+                }
+                else{
+                  echo '<tr>
+                          <td>'.$row['name'].'</td>'.
+                          '<td>'.$row['origin'].'</td>'.
+                          '<td>'.$row['destiny'].'</td>'.
+                          '<td>'.$row['phone'].'</td>'.
+                          '<td>'.$row['email'].'</td>'.
+                          '<td>'.$row['address'].'</td>'.
+                          '<td>'.$row['anomalyContact'].'</td>'.
+                          '<td>'.
+                            $buttonSchedule.
+                            $buttonMap.
+                          '</td>'.
+                        '</tr>';
+                }
               }
               ?>
             </tbody>
