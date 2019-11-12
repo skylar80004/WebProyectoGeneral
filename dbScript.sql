@@ -38,3 +38,31 @@ create table schedule(
 );
 
 ALTER TABLE enterprise AUTO_INCREMENT=1;
+
+create table log(
+  user varchar(30),
+  action varchar(300),
+  creationTime datetime DEFAULT CURRENT_TIMESTAMP
+)
+
+
+create table route (
+
+  id int AUTO_INCREMENT PRIMARY KEY,
+  enterpriseID int,
+  routeNumber int,
+  description varchar(200),
+  cost varchar(100),
+  duration varchar(200),
+  handicapCheck varchar(100),
+  FOREIGN KEY(enterpriseID) REFERENCES enterprise(id)
+
+);
+
+create table routePoints(
+  enterpriseID int,
+  routeNumber int,
+  lat float,
+  lng float,
+  type varchar(100)
+);

@@ -48,8 +48,11 @@ session_start();
 
         <?php
         $addRef = 'createSchedule.php?id='.$_GET['id'].'&name='.$_GET['name'];
-        $buttonAddRef = "<a href=".$addRef." class='btn  btn-primary btn-xs' href='#'>Agregar horario</a>";
+        $updateRef = 'updateSchedule.php?id='.$_GET['id'].'&name='.$_GET['name'];
+        $buttonAddRef = "<a href=".$addRef." class='btn  btn-primary btn-xs' href='#'>Crear horario</a>";
         echo $buttonAddRef;
+        $buttonUpdateRef = "<a href=".$updateRef." class='btn  btn-primary btn-xs' href='#'>Actualizar horario</a>";
+        echo $buttonUpdateRef;
 
          ?>
       </div>
@@ -71,20 +74,20 @@ session_start();
                 $dbConnection->connect();
                 $data = $dbConnection->getSchedule($_GET['id']);
 
-                $mondayStart = "Hola";
-                $mondayFinish = "Hola";
-                $tuesdayStart = "Hola";
-                $tuesdayFinish  = "Hola";
-                $wednesdayStart = "Hola";
-                $wednesdayFinish = "Hola";
-                $thursdayStart = "Hola";
-                $thursdayFinish = "Hola";
-                $fridayStart = "Hola";
-                $fridayFinish = "Hola";
-                $saturdayStart = "Hola";
-                $saturdayFinish = "Hola";
-                $sundayStart = "Hola";
-                $sundayFinish = "Hola";
+                $mondayStart = "Sin horario";
+                $mondayFinish = "Sin horario";
+                $tuesdayStart = "Sin horario";
+                $tuesdayFinish  = "Sin horario";
+                $wednesdayStart = "Sin horario";
+                $wednesdayFinish = "Sin horario";
+                $thursdayStart = "Sin horario";
+                $thursdayFinish = "Sin horario";
+                $fridayStart = "Sin horario";
+                $fridayFinish = "Sin horario";
+                $saturdayStart = "Sin horario";
+                $saturdayFinish = "Sin horario";
+                $sundayStart = "Sin horario";
+                $sundayFinish = "Sin horario";
 
                 foreach ($data as $row) {
 

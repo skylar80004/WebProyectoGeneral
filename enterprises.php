@@ -30,6 +30,9 @@ session_start();
           <li class="nav-item active">
             <a href="enterprises.php" class="nav-link" href="#">Empresas<span class="sr-only">(current)</span></a>
           </li>
+          <li class="nav-item active">
+            <a href="log.php" class="nav-link" href="#">Log<span class="sr-only">(current)</span></a>
+          </li>
         </ul>
       </div>
     </nav>
@@ -58,19 +61,6 @@ session_start();
               </tr>
             </thead>
             <tbody>
-              <tr>
-                  <td>1</td>
-                  <td>News</td>
-                  <td>News Cate</td>
-                  <td>1</td>
-                  <td>News</td>
-                  <td>News Cate</td>
-                  <td>1</td>
-                  <td class="text-center">
-                    <a class='btn btn-info btn-xs' href="#"><span class="glyphicon glyphicon-edit"></span> Editar</a>
-                    <a href="enterpriseSchedule.php" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span> Horario</a>
-                  </td>
-              </tr>
               <?php
 
               include 'dbConnection.php';
@@ -79,12 +69,16 @@ session_start();
               $dbConnection->connect();
               $data = $dbConnection->getEnterprises();
               foreach($data as $row){
+
                 $scheduleRef = 'enterpriseSchedule.php?id='.$row['id'].'&name='.$row['name'];
                 $mapRef = 'enterpriseMap.php?lat='.$row['latitude'].'&lng='.$row['longitude'].'&name='.$row['name'];
                 $editRef = 'editEnterprise.php?id='.$row['id'];
+                $routeRef = 'routes.php?id='.$row['id'].'&name='.$row['name'];
+
                 $buttonEdit = "<a href=".$editRef." class='btn btn-block btn-info btn-xs' href='#'>Editar</a>";
                 $buttonSchedule = "<a href=".$scheduleRef." class='btn btn-block btn-info btn-xs'>Horario</a>";
                 $buttonMap = "<a href=".$mapRef." class='btn btn-block btn-info btn-xs'>Mapa</a>";
+                $buttonRoutes = "<a href=".$routeRef." class='btn btn-block btn-info btn-xs'>Rutas</a>";
 
                 echo '<tr>
                         <td>'.$row['name'].'</td>'.
@@ -98,20 +92,15 @@ session_start();
                           $buttonEdit.
                           $buttonSchedule.
                           $buttonMap.
+                          $buttonRoutes.
                         '</td>'.
-                      '</tr>'
-                ;
-
+                      '</tr>';
               }
-
-
               ?>
             </tbody>
-
       </table>
         </div>
 </div>
-
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

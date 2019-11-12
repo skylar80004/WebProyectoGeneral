@@ -25,34 +25,158 @@ class dbConnection {
     catch(PDOException $e){
       //echo "Connection failed: " . $e->getMessage();
     }
+  }
+  public function insertRoute(){
+    if($this->conn != null){
 
+      $json = file_get_contents('php://input');
+      // Converts it into a PHP object
+      $data = json_decode($json);
+
+      $routeHandicapCheck = $data->routeHandicapCheck;
+      $routeNumber = $data->routeNumber;
+      $routeDescription = $data->routeDescription;
+      $routeCost = $data->routeCost;
+      $routeDuration = $data->routeDuration;
+      $routePoints = $data->routePoints;
+      $enterpriseID = $data->enterpriseID;
+      $enterpriseName = $data->enterpriseName;
+
+      try {
+        $sqlRoute = "INSERT INTO route
+        (id, enterpriseID,routeNumber,description, cost,duration,handicapCheck)
+        VALUES (?,?,?,?,?,?,?)";
+        $stmt = $this->conn->prepare($sqlRoute);
+        $stmt->execute([null,(int)$enterpriseID,(int)$routeNumber,$routeDescription,
+        $routeCost,$routeDuration,$routeHandicapCheck]);
+
+        try {
+
+          $counter = 0;
+          $size = sizeof($routePoints);
+          $sqlRoutePoints = "INSERT INTO routepoints(enterpriseID,routeNumber,
+          lat,lng,type) VALUES (?,?,?,?,?)";
+
+          foreach ($routePoints as $value) {
+
+            if($counter == 0){
+              $stmt = $this->conn->prepare($sqlRoutePoints);
+              $stmt->execute([(int)$enterpriseID,(int)$routeNumber,(float)$value->lat,
+              (float)$value->lng,"Start"]);
+            }
+            else if($counter == $size-1){
+              $stmt = $this->conn->prepare($sqlRoutePoints);
+              $stmt->execute([(int)$enterpriseID,(int)$routeNumber,(float)$value->lat,
+              (float)$value->lng,"Finish"]);
+            }
+            else{
+              $stmt = $this->conn->prepare($sqlRoutePoints);
+              $stmt->execute([(int)$enterpriseID,(int)$routeNumber,(float)$value->lat,
+              (float)$value->lng,"Intermedium"]);
+            }
+            $counter++;
+          }
+
+          $action = "Se insertó una nueva ruta para la empresa " . $enterpriseName;
+          $this->insertLog($action);
+
+        } catch (\Exception $e) {
+            echo "Error " . $e;
+          }
+        } catch (\Exception $e) {
+          echo "Error ruta " . $e;
+        }
+      }
+    }
+
+  public function getLogs(){
+    if($this->conn != null){
+      try {
+        $data = $this->conn->query("SELECT * FROM log")->fetchAll();
+        return $data;
+
+      } catch (\Exception $e) {
+        echo "Error en el get log " . $e;
+      }
+
+    }
+  }
+  public function insertLog($action){
+    if($this->conn != null){
+      try {
+        $username = $_SESSION["username"];
+        $insert = "INSERT INTO log (user,action) VALUES(?,?)";
+        $stmt = $this->conn->prepare($insert);
+        $stmt->execute([$username,$action]);
+        echo "Insertado log";
+
+      } catch (\Exception $e) {
+        echo "Error en log " . $e;
+      }
+    }
+  }
+
+  public function updateSchedule(){ // TODO
+    if($this->conn != null){
+
+      /*
+      echo "hola";
+      echo $enterpriseId;
+      $sql = "UPDATE enterprise SET name=?, origin=?, destiny=?,
+      phone=?, email=?, address= ?, latitude=?, longitude=?,
+      anomalyContact=? WHERE id=?";
+      $stmt = $this->conn->prepare($sql);
+      $stmt->execute([$enterpriseName,$enterpriseOrigin,$enterpriseDestiny,
+      $enterprisePhone,$enterpriseEmail,$enterpriseAddress,$enterpriseLat,
+      $enterpriseLng,$enterpriseAnomalyContact,$enterpriseId]);
+      echo "Updated";
+      */
+
+      $enterpriseId = $_SESSION['enterpriseId'];
+      $mondayStart = $_POST['mondayStart'];
+      $mondayFinish = $_POST['mondayFinish'];
+      $tuesdayStart = $_POST['tuesdayStart'];
+      $tuesdayFinish = $_POST['tuesdayFinish'];
+      $wednesdayStart = $_POST['wednesdayStart'];
+      $wednesdayFinish = $_POST['wednesdayFinish'];
+      $thursdayStart = $_POST['thursdayStart'];
+      $thursdayFinish = $_POST['thursdayFinish'];
+      $fridayStart = $_POST['fridayStart'];
+      $fridayFinish = $_POST['fridayFinish'];
+      $saturdayStart = $_POST['saturdayStart'];
+      $saturdayFinish = $_POST['saturdayFinish'];
+      $sundayStart = $_POST['sundayStart'];
+      $sundayFinish = $_POST['sundayFinish'];
+
+      $sql = "UPDATE schedule SET start=?,finish=?
+      WHERE enterpriseID=? and day=?";
+      $stmt = $this->conn->prepare($sql);
+      $stmt->execute([$mondayStart,$mondayFinish,$enterpriseId,"Lunes"]);
+      echo "Day updated";
+
+    }
   }
 
   public function getSchedule($enterpriseId){
-
     if($this->conn != null){
-
       try {
-
         $sql = "select * from schedule where enterpriseID=:enterpriseID";
         $stmt = $this->conn->prepare($sql);
         $stmt->execute(['enterpriseID' =>(int)$enterpriseId]);
         $data = $stmt->fetchAll();
         return $data;
-
       } catch (\Exception $e) {
         echo $e;
-
       }
+    }
   }
-}
+
   public function insertSchedule(){
 
     if($this->conn != null){
 
       $fieldValidator = new FieldValidator();
       $enterpriseId = $_SESSION['enterpriseId'];
-      echo "ID ES: ".$enterpriseId;
       $mondayStart = $_POST['mondayStart'];
       $mondayFinish = $_POST['mondayFinish'];
       $tuesdayStart = $_POST['tuesdayStart'];
@@ -103,7 +227,10 @@ class dbConnection {
         $stmt = $this->conn->prepare($sql);
         $stmt->execute([null,(int)$enterpriseId,"Sunday",$sundayStart,$sundayFinish]);
 
-        echo "insertado";
+        echo "insertado horario ";
+
+        $action = "Horario creado para empresa con id" . $enterpriseId ;
+        $this->insertLog($action);
 
       } catch (\Exception $e) {
         echo "error ".$e;
@@ -128,7 +255,6 @@ class dbConnection {
       $enterpriseLng = $_POST["enterpriseLng"];
       $enterpriseAnomalyContact = $_POST["anomalyContact"];
       $enterpriseId = $_SESSION["enterpriseId"];
-
 
       //Input Validations
       $fieldValidator = new FieldValidator();
@@ -208,6 +334,9 @@ class dbConnection {
         $enterprisePhone,$enterpriseEmail,$enterpriseAddress,$enterpriseLat,
         $enterpriseLng,$enterpriseAnomalyContact,$enterpriseId]);
         echo "Updated";
+
+        $action = "Horario de empresa id  " . $enterprisId. " actualizado" ;
+        $this->insertLog($action);
 
       } catch (\Exception $e) {
         echo $e;
@@ -329,7 +458,10 @@ class dbConnection {
         $stmt->execute([null,$enterpriseName,$enterpriseOrigin,
         $enterpriseDestiny,$enterprisePhone,$enterpriseEmail,$enterpriseAddress,
         (float) $enterpriseLat,(float) $enterpriseLng,$enterpriseAnomalyContact]);
-        echo "Insertado";
+        echo "Insertado empresa";
+
+        $action = "Nueva empresa " . $enterpriseName . " creada" ;
+        $this->insertLog($action);
 
       } catch (\Exception $e) {
         echo $e;
@@ -354,9 +486,6 @@ class dbConnection {
         $message = "Su contraseña fue cambiada";
         $newURL = "welcome.php?Message=".urlencode($message);
         header('Location: '.$newURL);
-
-
-
       }
       else{
         $message = "La contraseña ingresada no cumple con el formato requerido. Debe contener números y letras en mayúscula y minúscula ";
@@ -393,11 +522,9 @@ class dbConnection {
           }
         }
         else{
-
           $errorMessage = "Debe ingresar todos los campos para poder iniciar sesión";
           $newURL = "login.php?Message=".urlencode($errorMessage);
           header('Location: '.$newURL);
-
         }
       }
       catch(PDOException $e){
@@ -405,9 +532,7 @@ class dbConnection {
         $errorMessage = "Fallo en la conexión";
         $newURL = "login.php?Message=".urlencode($errorMessage);
         header('Location: '.$newURL);
-
       }
-
     }
   }
 
