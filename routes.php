@@ -146,7 +146,7 @@ $param = $_SESSION["username"];
           xhttp.open("POST","createRoute.php",true);
           xhttp.setRequestHeader("Content-type", "application/json");
           xhttp.send(JSON.stringify(data));
-        }
+        };
 
       }
 

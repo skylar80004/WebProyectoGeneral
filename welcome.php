@@ -40,6 +40,9 @@ if (isset($_GET['Message'])) {
       <li class="nav-item active">
         <a href="log.php" class="nav-link" href="#">Log<span class="sr-only">(current)</span></a>
       </li>
+      <li class="nav-item active">
+        <a href="querys.php" class="nav-link" href="#">Consultas<span class="sr-only">(current)</span></a>
+      </li>
     </ul>
   </div>
 </nav>
