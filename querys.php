@@ -43,11 +43,11 @@ session_start();
     <div class="container justify-content-left align-items-left">
       <div class="row">
         <div class="col">
-          <h4>Rutas de servicio de una empresa</h3>
+          <h4>Rutas de servicio por empresa</h4>
           <label for="routeNumber">Seleccione el nombre de la empresa</label>
           <select id="selectQueryAllRoutes">
             <?php
-              // Get enterprise name and id to print a combo box to the html
+              // Get enterprise name and id to print a combo box in the html
               include 'dbConnection.php';
               $dbConnection = new dbConnection();
               $dbConnection->connect();
@@ -56,9 +56,18 @@ session_start();
                 echo '<option value='.$row['id'].'>'.$row['name'].'</option>';
               }
              ?>
-
           </select>
-          <button id="buttonQueryAllRoutes" type="button" class="btn btn-secondary">Consultar</button>
+          <button id="buttonQueryAllRoutes" type="button" class="btn btn-secondary btn-block">Consultar</button>
+          <br>
+          <h4>Rutas de servicio con un destino particular</h4>
+          <label for="routeNumber">Ingrese el nombre del destino:</label>
+          <input id="inputQueryByDestiny" type="text" class="form-control" placeholder="Ejemplo: San José" aria-label="Recipient's username" aria-describedby="basic-addon2">
+          <button id="buttonQueryByDestiny" class="btn btn-secondary btn-block">Consultar</button>
+          <br>
+          <h4>Rutas con algún punto intermedio en común</h4>
+          <button id="buttonQueryInCommon" class="btn btn-secondary btn-block">Consultar</button>
+
+
         </div>
         <div class="col">
           <div id="map" class="map map-home" style="margin:12px 0 12px 0;height:600px;"></div>
@@ -84,6 +93,90 @@ session_start();
 
     <script type="text/javascript">
 
+
+    function checkPointsInCommon(routesArray){
+      let pointsArray = [];
+      let pointsArrayCompare = [];
+
+      let polylineArray = [];
+      let polylinePoint = [];
+
+      let polylineArrayCompare = [];
+      let polylinePointCompare = [];
+      const compareDistace = 50;
+
+      let markerInCommonOriginal = false;
+      let markerInCommonCompare = false;
+
+      for(let i = 0; i < routesArray.length;i++){
+        pointsArray = routesArray[i];
+        for(let j = 1; j < pointsArray.length;j++){
+
+          let point = pointsArray[j];
+          let type = point[0];
+          let lat = point[1];
+          let lng = point[2];
+          let latFloat = parseFloat(lat);
+          let lngFloat = parseFloat(lng);
+          polylinePoint = [latFloat,lngFloat];
+          polylineArray.push(polylinePoint);
+
+          for(let i2 = i+1; i2 < routesArray.length;i2++){
+            pointsArrayCompare = routesArray[i2];
+            for(let j2 = 1; j2 < pointsArrayCompare.length;j2++){
+
+              let pointCompare = pointsArrayCompare[j2];
+              let latCompare = pointCompare[1];
+              let lngCompare = pointCompare[2];
+              let latFloatCompare = parseFloat(latCompare);
+              let lngFloatCompare = parseFloat(lngCompare);
+
+              let latLngOriginal = L.latLng(latFloat, lngFloat);
+              let latLngCompare = L.latLng(latFloatCompare, lngFloatCompare);
+              polylinePointCompare = [latCompare,lngCompare];
+              polylineArrayCompare.push(polylinePointCompare);
+
+              if(latLngOriginal.distanceTo(latLngCompare) <= compareDistace){
+                markerInCommonOriginal = true;
+                markerInCommonCompare = true;
+              }
+            }
+            if(markerInCommonCompare){
+
+              let color;
+              let r = Math.floor(Math.random() * 255);
+              let g = Math.floor(Math.random() * 255);
+              let b = Math.floor(Math.random() * 255);
+              color = "rgb("+r+" ,"+g+","+ b+")";
+
+              let polyLineCompare = L.polyline(polylineArrayCompare,{color:color}).addTo(map);
+              polylineArrayCompare = [];
+              markerInCommonCompare = false;
+            }
+            else{
+              polylineArrayCompare = [];
+            }
+          }
+        }
+        if(markerInCommonOriginal){
+          let color;
+          let r = Math.floor(Math.random() * 255);
+          let g = Math.floor(Math.random() * 255);
+          let b = Math.floor(Math.random() * 255);
+          color = "rgb("+r+" ,"+g+","+ b+")";
+
+          let polyline = L.polyline(polylineArray,{color:color}).addTo(map);
+          polylineArray = [];
+          markerInCommonOriginal = false;
+
+        }
+        else{
+          polylineArray = [];
+        }
+
+      }
+    }
+
       // Recibe un array de 3 dimensiones que representa las rutas
       // La primer dimension son las rutas en general
       // la segunda dimension es una ruta especifica
@@ -97,6 +190,10 @@ session_start();
 
         let polylineArray = [];
         let polylinePoint = [];
+        const redColor = '#ff0000';
+        const greenColor = '#00ff00';
+        const blueColor = '#0000ff';
+
         console.log(routesArray);
         for(let i = 0 ; i < routesArray.length;i++){
           pointsArray = routesArray[i];
@@ -113,24 +210,53 @@ session_start();
               map.panTo(new L.LatLng(latFloat, lngFloat));
             }
 
-            let marker = L.marker([latFloat,lngFloat]).addTo(map);
+            let myCustomColour;
+
+            if(type == "Start"){
+              type="Inicial";
+              myCustomColour = blueColor;
+
+            }
+            else if(type == "Finish"){
+              type="Final";
+              myCustomColour = redColor;
+            }
+            else{
+              type="Intermedio";
+              myCustomColour = greenColor;
+            }
+
+            const markerHtmlStyles = `
+              background-color: ${myCustomColour};
+              width: 3rem;
+              height: 3rem;
+              display: block;
+              left: -1.5rem;
+              top: -1.5rem;
+              position: relative;
+              border-radius: 3rem 3rem 0;
+              transform: rotate(45deg);
+              border: 1px solid #FFFFFF`;
+
+            const icon = L.divIcon({
+              className: "my-custom-pin",
+              iconAnchor: [0, 24],
+              labelAnchor: [-6, 0],
+              popupAnchor: [0, -36],
+              html: `<span style="${markerHtmlStyles}" />`
+            });
+
+            let marker =  L.marker([latFloat, lngFloat], {
+              icon: icon
+            }).addTo(map);
+
+            //let marker = L.marker([latFloat,lngFloat]).addTo(map);
             marker.on('mouseover',function(e){
 
               let routeInfoArray = ((routesArray[i])[0]);
               let routeNumber = routeInfoArray[0];
               let routeCost = routeInfoArray[1];
               let routeDescription = routeInfoArray[2];
-
-              if(type == "Start"){
-                type="Inicial";
-              }
-              else if(type == "Finish"){
-                type="Final";
-              }
-              else{
-                type="Intermedio";
-              }
-
               let message = "<b>Ruta número: " + routeNumber + "</b>" +
               "<br> <b>Descripción de la ruta: " + routeDescription + "</b>" +
               "<br> <b>Costo del pasaje: " +routeCost + "</b>" +
@@ -160,13 +286,11 @@ session_start();
           waypoints = [];
           */
         }
-
-
-
       }
 
       window.onload = function(){
 
+        // Consulta 1 y 2
         let buttonQueryAllRoutes = document.getElementById("buttonQueryAllRoutes");
         buttonQueryAllRoutes.onclick = function(){
 
@@ -193,6 +317,46 @@ session_start();
           xhttp.setRequestHeader("Content-type", "application/json");
           xhttp.send(JSON.stringify(data));
         };
+
+        let buttonQueryByDestiny = document.getElementById("buttonQueryByDestiny");
+        buttonQueryByDestiny.onclick = function(){
+          let destiny = document.getElementById("inputQueryByDestiny").value;
+          let data = {
+            destiny:destiny,
+            queryNumber:3
+          };
+          let xhttp = new XMLHttpRequest();
+          xhttp.onreadystatechange  = function(){
+            if(this.readyState == 4 && this.status == 200){
+               let routesResponse = JSON.parse(xhttp.responseText);
+               drawRoutes(routesResponse);
+            }
+          }
+          xhttp.open("POST","queryHandler.php",true);
+          xhttp.setRequestHeader("Content-type", "application/json");
+          xhttp.send(JSON.stringify(data));
+        }
+
+        let buttonQueryInCommon = document.getElementById("buttonQueryInCommon");
+        buttonQueryInCommon.onclick = function(){
+
+          let data = {
+            queryNumber:4
+          };
+
+          let xhttp = new XMLHttpRequest();
+          xhttp.onreadystatechange = function(){
+            if(this.readyState == 4 && this.status == 200){
+              let routesResponse = JSON.parse(xhttp.responseText);
+              checkPointsInCommon(routesResponse);
+              console.log(routesResponse);
+            }
+          }
+          xhttp.open("POST","queryHandler.php",true);
+          xhttp.setRequestHeader("Content-type", "application/json");
+          xhttp.send(JSON.stringify(data));
+        }
+
 
       }
 

@@ -14,9 +14,14 @@
 
     $enterpriseName = $data->enterpriseName;
     $enterpriseID = $data->enterpriseID;
-    $dbConnection->getAllRoutes($enterpriseName,$enterpriseID);
-    
+    $dbConnection->getAllRoutesFromEnterprise($enterpriseName,$enterpriseID);
+
   }
-
-
+  else if($queryNumber == 3){
+    $destiny = $data->destiny;
+    $dbConnection->getRoutesByDestiny($destiny);
+  }
+  else if($queryNumber == 4){
+    $dbConnection->getAllRoutes();
+  }
  ?>

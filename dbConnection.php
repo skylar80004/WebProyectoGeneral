@@ -27,8 +27,86 @@ class dbConnection {
     }
   }
 
+  public function getAllRoutes(){
+    if($this->conn != null){
+
+
+      $data = $this->conn->query("SELECT * FROM route")->fetchAll();
+      $arrayResult = [];
+      $routeInfo = [];
+
+
+      foreach($data as $route){
+
+        $arrayRoutePoints = [];
+        $enterpriseID = $route['enterpriseID'];
+        $routeNumber = $route['routeNumber'];
+        $routeCost = $route['cost'];
+        $routeDescription = $route['description'];
+        $routeInfo = [$routeNumber,$routeCost,$routeDescription];
+        array_push($arrayRoutePoints,$routeInfo);
+
+        $sqlPoints = "select * from routePoints where enterpriseID=:enterpriseID and routeNumber=:routeNumber";
+        $stmtPoints = $this->conn->prepare($sqlPoints);
+        $stmtPoints->execute(['enterpriseID' => (int)$enterpriseID, 'routeNumber' =>(int)$routeNumber]);
+        $routePoints = $stmtPoints->fetchAll();
+        foreach($routePoints as $points){
+          $arrayLatLng = [$points['type'],$points['lat'],$points['lng']];
+          array_push($arrayRoutePoints,$arrayLatLng);
+        }
+        array_push($arrayResult,$arrayRoutePoints);
+      }
+     echo json_encode($arrayResult);
+    }
+
+  }
+
+  public function getRoutesByDestiny($destiny){
+
+    if($this->conn != null){
+
+      $sqlEnterprise = "select * from enterprise where destiny=:destiny";
+      $stmt = $this->conn->prepare($sqlEnterprise);
+      $stmt->execute(['destiny' => $destiny]);
+
+      $enterpriseResult = $stmt->fetchAll();
+      $arrayResult = [];
+      foreach($enterpriseResult as $enterprise){
+
+        $enterpriseID = $enterprise['id'];
+
+        $sql = "select * from route where enterpriseID=:enterpriseID";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute(['enterpriseID' =>(int)$enterpriseID]);
+        $routes = $stmt->fetchAll();
+        $routeInfo = [];
+
+        foreach($routes as $route){
+
+          $arrayRoutePoints = [];
+          $routeNumber = $route['routeNumber'];
+          $routeCost = $route['cost'];
+          $routeDescription = $route['description'];
+          $routeInfo = [$routeNumber,$routeCost,$routeDescription];
+          array_push($arrayRoutePoints,$routeInfo);
+
+          $sqlPoints = "select * from routePoints where enterpriseID=:enterpriseID and routeNumber=:routeNumber";
+          $stmtPoints = $this->conn->prepare($sqlPoints);
+          $stmtPoints->execute(['enterpriseID' => (int)$enterpriseID, 'routeNumber' =>(int)$routeNumber]);
+          $routePoints = $stmtPoints->fetchAll();
+          foreach($routePoints as $points){
+            $arrayLatLng = [$points['type'],$points['lat'],$points['lng']];
+            array_push($arrayRoutePoints,$arrayLatLng);
+          }
+          array_push($arrayResult,$arrayRoutePoints);
+        }
+      }
+      echo json_encode($arrayResult);
+    }
+  }
+
   //Returns all the transportation routes of an enterprise
-  public function getAllRoutes($enterpriseName,$enterpriseID){
+  public function getAllRoutesFromEnterprise($enterpriseName,$enterpriseID){
 
     if($this->conn != null){
 
